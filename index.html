@@ -465,8 +465,18 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <input class="form-input" id="f-baslangic" type="date">
       </div>
       <div class="form-group">
+        <label class="form-label">Başlangıç Saati</label>
+        <input class="form-input" id="f-baslangic-saat" type="time" placeholder="00:00">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
         <label class="form-label">Bitiş Tarihi</label>
         <input class="form-input" id="f-bitis" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bitiş Saati</label>
+        <input class="form-input" id="f-bitis-saat" type="time" placeholder="00:00">
       </div>
     </div>
 
@@ -1008,8 +1018,8 @@ function showDetail(id){
       <div class="det-grid">
         <div class="det-item"><div class="det-item-label">Tur Tarihi</div><div class="det-item-val">📅 ${r.turTarihi||'—'}</div></div>
         <div class="det-item"><div class="det-item-label">Zaman</div><div class="det-item-val">${r.zaman||'—'}</div></div>
-        <div class="det-item"><div class="det-item-label">Başlangıç</div><div class="det-item-val">${r.baslangic||'—'}</div></div>
-        <div class="det-item"><div class="det-item-label">Bitiş</div><div class="det-item-val">${r.bitis||'—'}</div></div>
+        <div class="det-item"><div class="det-item-label">Başlangıç</div><div class="det-item-val">${r.baslangic||'—'}${r.baslangicSaat?' ⏰ '+r.baslangicSaat:''}</div></div>
+        <div class="det-item"><div class="det-item-label">Bitiş</div><div class="det-item-val">${r.bitis||'—'}${r.bitisSaat?' ⏰ '+r.bitisSaat:''}</div></div>
         <div class="det-item"><div class="det-item-label">Kişi Sayısı</div><div class="det-item-val">👥 ${r.kisi||'—'}</div></div>
         <div class="det-item"><div class="det-item-label">Yemek / Kokteyl</div><div class="det-item-val">${r.yemek||'—'} · ${r.kokteyl?'🥂 '+r.kokteyl:'—'}</div></div>
         <div class="det-item full"><div class="det-item-label">Alış → Bırakış</div><div class="det-item-val">📍 ${r.alis||'—'} → ${r.birakis||'—'}</div></div>
@@ -1057,7 +1067,9 @@ function openEdit(id){
   document.getElementById('f-tur-tarihi').value=r.turTarihi||'';
   document.getElementById('f-org').value=r.org||'';
   document.getElementById('f-baslangic').value=r.baslangic||'';
+  document.getElementById('f-baslangic-saat').value=r.baslangicSaat||'';
   document.getElementById('f-bitis').value=r.bitis||'';
+  document.getElementById('f-bitis-saat').value=r.bitisSaat||'';
   document.getElementById('f-zaman').value=r.zaman||'';
   document.getElementById('f-kisi').value=r.kisi||'';
   document.getElementById('f-yemek').value=r.yemek||'';
@@ -1071,7 +1083,7 @@ function openEdit(id){
 }
 
 function clearForm(){
-  ['f-musteri','f-telefon','f-tur-tarihi','f-baslangic','f-bitis','f-kisi',
+  ['f-musteri','f-telefon','f-tur-tarihi','f-baslangic','f-baslangic-saat','f-bitis','f-bitis-saat','f-kisi',
    'f-alis','f-birakis','f-toplam','f-kapora','f-not'].forEach(id=>document.getElementById(id).value='');
   ['f-org','f-zaman','f-yemek','f-kokteyl'].forEach(id=>document.getElementById(id).value='');
 }
@@ -1096,7 +1108,9 @@ async function saveRez(){
     musteri, telefon:document.getElementById('f-telefon').value,
     turTarihi, org:document.getElementById('f-org').value,
     baslangic:document.getElementById('f-baslangic').value,
+    baslangicSaat:document.getElementById('f-baslangic-saat').value,
     bitis:document.getElementById('f-bitis').value,
+    bitisSaat:document.getElementById('f-bitis-saat').value,
     zaman:document.getElementById('f-zaman').value,
     kisi:document.getElementById('f-kisi').value,
     yemek:document.getElementById('f-yemek').value,
