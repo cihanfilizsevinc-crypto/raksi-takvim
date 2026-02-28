@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Raksi Derya — Rezervasyon Takvimi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A96E;
+  --gold2: #E8C98A;
+  --bg: #0D0D0F;
+  --bg2: #141418;
+  --bg3: #1C1C22;
+  --card: #18181E;
+  --border: rgba(201,169,110,0.15);
+  --text: #F0EAE0;
+  --text2: #9A9080;
+  --text3: #5A5450;
+  --red: #E05555;
+  --red-soft: rgba(224,85,85,0.15);
+  --blue: #5B8FD4;
+  --blue-soft: rgba(91,143,212,0.15);
+  --green: #5BBD8A;
+  --green-soft: rgba(91,189,138,0.12);
+  --orange: #E09B45;
+  --orange-soft: rgba(224,155,69,0.15);
+  --purple: #9B72CF;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,#0D0D0F 0%,#1A1510 50%,#0D0D0F 100%);border-bottom:1px solid var(--border);padding:16px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);letter-spacing:0.5px}
+.logo span{color:var(--text2);font-size:11px;display:block;font-family:'DM Sans',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.header-btn{background:var(--gold);color:#0D0D0F;border:none;padding:9px 16px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+
+/* ── TABS ── */
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border)}
+.tab{flex:1;padding:14px 8px;text-align:center;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;letter-spacing:0.5px}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* ── TAKVİM ── */
+.cal-wrap{padding:12px 10px 20px}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 4px}
+.cal-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:.5px}
+.cal-btn{background:var(--bg3);border:1px solid var(--border);color:var(--gold);width:42px;height:42px;border-radius:12px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;font-weight:300}
+.cal-btn:active{background:var(--gold);color:#0D0D0F}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-day-name{text-align:center;font-size:11px;color:var(--gold);font-weight:600;padding:6px 0 8px;letter-spacing:1.5px;text-transform:uppercase}
+.cal-day{
+  aspect-ratio:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:12px;cursor:pointer;position:relative;
+  transition:.12s all;
+  border:2px solid transparent;
+  font-size:16px;font-weight:700;
+  color:#FFFFFF;
+  background:rgba(255,255,255,0.06);
+  text-shadow: 0 0 8px rgba(255,255,255,0.4);
+  min-height:44px;
+}
+.cal-day:active{transform:scale(.93)}
+.cal-day.empty{cursor:default;background:transparent;border:none}
+.cal-day.past{opacity:.45;cursor:default;color:#FFFFFF !important;text-shadow:none}
+.cal-day.freeday{color:#FFFFFF !important;background:rgba(255,255,255,0.06);text-shadow:0 0 8px rgba(255,255,255,0.4)}
+.cal-day.freeday:hover{background:rgba(201,169,110,0.1);border-color:rgba(201,169,110,0.25);color:var(--gold)}
+
+/* Bugün */
+.cal-day.today{
+  border-color:var(--gold) !important;
+  color:var(--gold) !important;
+  background:rgba(201,169,110,0.12) !important;
+  box-shadow:0 0 0 1px rgba(201,169,110,0.2);
+}
+.cal-day.today::after{
+  content:'●';font-size:6px;position:absolute;bottom:5px;color:var(--gold);
+}
+
+/* DOLU — Kırmızı, çok belirgin */
+.cal-day.dolu{
+  background:rgba(224,85,85,0.22) !important;
+  border-color:var(--red) !important;
+  color:#FF7070 !important;
+  font-weight:800;
+  box-shadow:0 2px 12px rgba(224,85,85,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+/* OPSİYON — Mavi */
+.cal-day.opsiyon{
+  background:rgba(91,143,212,0.2) !important;
+  border-color:var(--blue) !important;
+  color:#7AADEE !important;
+  font-weight:800;
+  box-shadow:0 2px 12px rgba(91,143,212,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+/* ONAY BEKLİYOR — Turuncu */
+.cal-day.onay-bekliyor{
+  background:rgba(224,155,69,0.2) !important;
+  border-color:var(--orange) !important;
+  color:#F0B860 !important;
+  font-weight:800;
+  box-shadow:0 2px 12px rgba(224,155,69,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+/* TAMAMLANDI — Yeşil */
+.cal-day.tamamlandi{
+  background:rgba(91,189,138,0.18) !important;
+  border-color:#5BBD8A !important;
+  color:#7DD4A8 !important;
+  font-weight:800;
+  box-shadow:0 2px 12px rgba(91,189,138,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* Durum ikonu — küçük sembol */
+.cal-day .day-ico{
+  font-size:9px;
+  position:absolute;
+  bottom:4px;
+  line-height:1;
+}
+.cal-day .day-count{
+  font-size:8px;
+  position:absolute;
+  top:4px;right:5px;
+  opacity:.8;
+  font-weight:600;
+}
+
+/* ── LEGEND ── */
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:14px 10px 4px}
+.leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);font-weight:500}
+.leg-dot{width:14px;height:14px;border-radius:4px;border:2px solid}
+
+/* ── LİSTE ── */
+.list-wrap{padding:16px}
+.list-filter{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;scrollbar-width:none}
+.list-filter::-webkit-scrollbar{display:none}
+.filter-btn{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.filter-btn.active{background:var(--gold);color:#0D0D0F;border-color:var(--gold);font-weight:600}
+.rez-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.rez-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+.rez-card.dolu::before{background:var(--red)}
+.rez-card.opsiyon::before{background:var(--blue)}
+.rez-card.onay-bekliyor::before{background:var(--orange)}
+.rez-card.tamamlandi::before{background:var(--green)}
+.rez-card:hover{border-color:var(--gold)}
+.rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.rc-name{font-size:15px;font-weight:600;color:var(--text)}
+.rc-badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;letter-spacing:.5px}
+.rc-badge.dolu{background:var(--red-soft);color:var(--red)}
+.rc-badge.opsiyon{background:var(--blue-soft);color:var(--blue)}
+.rc-badge.onay-bekliyor{background:var(--orange-soft);color:var(--orange)}
+.rc-badge.tamamlandi{background:var(--green-soft);color:var(--green)}
+.rc-org{font-size:12px;color:var(--gold);font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.rc-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.rc-chip{font-size:11px;padding:3px 8px;background:var(--bg3);border-radius:6px;color:var(--text2)}
+.rc-fin{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.rc-fin-item{text-align:center}
+.rc-fin-label{font-size:10px;color:var(--text3);margin-bottom:2px}
+.rc-fin-val{font-size:14px;font-weight:600}
+.rc-fin-val.kapora{color:var(--green)}
+.rc-fin-val.kalan{color:var(--orange)}
+
+/* ── FORM MODALİ ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:none;align-items:flex-end}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding:20px;border-top:1px solid var(--border)}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:20px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;outline:none;-webkit-appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold)}
+.form-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23C9A96E' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.form-textarea{min-height:70px;resize:none}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-submit{width:100%;background:var(--gold);color:#0D0D0F;border:none;padding:14px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+.form-delete{width:100%;background:transparent;color:var(--red);border:1px solid var(--red);padding:12px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px}
+.close-modal{position:absolute;top:20px;right:20px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
+
+/* ── DETAY MODALİ ── */
+.det-section{margin-bottom:16px}
+.det-section-title{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.det-item{background:var(--bg3);border-radius:10px;padding:10px 12px}
+.det-item.full{grid-column:1/-1}
+.det-item-label{font-size:10px;color:var(--text3);margin-bottom:3px}
+.det-item-val{font-size:13px;color:var(--text);font-weight:500}
+.det-fin{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.det-fin-box{background:var(--bg3);border-radius:10px;padding:12px;text-align:center}
+.det-fin-box .lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.det-fin-box .val{font-size:16px;font-weight:700}
+.det-fin-box.kapora .val{color:var(--green)}
+.det-fin-box.kalan .val{color:var(--orange)}
+.det-fin-box.toplam .val{color:var(--gold)}
+.tel-link{display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:10px;padding:12px;color:var(--text);text-decoration:none;font-weight:500}
+
+/* ── DURUM SEÇIMI ── */
+.status-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.status-opt{border:1.5px solid var(--border);border-radius:10px;padding:8px 4px;text-align:center;font-size:10px;cursor:pointer;transition:.15s;color:var(--text2)}
+.status-opt.active-dolu{border-color:var(--red);background:var(--red-soft);color:var(--red)}
+.status-opt.active-opsiyon{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.status-opt.active-onay{border-color:var(--orange);background:var(--orange-soft);color:var(--orange)}
+.status-opt.active-tamamlandi{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:50px 20px;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--gold);color:var(--text);padding:12px 20px;border-radius:12px;font-size:13px;z-index:999;transition:.3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* AYARLAR */
+.ay-section{margin-bottom:22px}
+.ay-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;letter-spacing:.3px}
+.color-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.color-swatch{width:38px;height:38px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;border:2px solid transparent;transition:.15s;flex-shrink:0}
+.color-swatch:hover{transform:scale(1.12);border-color:rgba(255,255,255,0.4)}
+.color-swatch.trans-swatch{background:rgba(255,255,255,0.06);border:1px dashed var(--text3);color:var(--text3)}
+.cp-wrap{position:relative;background:var(--bg3);border:1px dashed var(--border);color:var(--text3)}
+.cp-wrap input[type=color]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;padding:0}
+.cp-wrap span{pointer-events:none;font-size:18px;font-weight:300}
+.size-row{display:flex;gap:8px}
+.size-btn{flex:1;padding:10px 6px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:.15s;font-weight:500}
+.size-btn:hover{border-color:var(--gold);color:var(--gold)}
+.size-btn.active-size{background:rgba(201,169,110,0.15);border-color:var(--gold);color:var(--gold);font-weight:700}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.theme-card{border:2px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:.15s}
+.theme-card:hover{border-color:var(--gold);transform:scale(1.03)}
+.theme-card.active{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,169,110,0.3)}
+.theme-preview{height:60px;width:100%}
+.theme-name{font-size:11px;text-align:center;padding:6px 4px;color:var(--text2);font-weight:500;background:var(--bg3)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Raksi Derya<span>Rezervasyon Takvimi</span></div>
+  <button class="header-btn" onclick="openNew()">+ Ekle</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('takvim',this)">📅 TAKVİM</div>
+  <div class="tab" onclick="switchTab('liste',this)">📋 LİSTE</div>
+  <div class="tab" onclick="switchTab('ozet',this)">💰 ÖZET</div>
+  <div class="tab" onclick="switchTab('ayarlar',this)">⚙️ AYARLAR</div>
+</div>
+
+<!-- TAKVİM SEKMESİ -->
+<div id="tab-takvim" class="cal-wrap">
+  <div class="cal-nav">
+    <button class="cal-btn" onclick="changeMonth(-1)">‹</button>
+    <div style="text-align:center">
+      <div class="cal-title" id="calTitle"></div>
+      <div id="calMonthStat" style="font-size:11px;color:var(--text3);margin-top:2px;letter-spacing:.5px"></div>
+    </div>
+    <button class="cal-btn" onclick="changeMonth(1)">›</button>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+  <div class="legend" style="margin-top:4px">
+    <div class="leg"><div class="leg-dot" style="background:rgba(224,85,85,0.22);border-color:var(--red)"></div><span style="color:#FF7070">Dolu</span></div>
+    <div class="leg"><div class="leg-dot" style="background:rgba(91,143,212,0.2);border-color:var(--blue)"></div><span style="color:#7AADEE">Opsiyon</span></div>
+    <div class="leg"><div class="leg-dot" style="background:rgba(224,155,69,0.2);border-color:var(--orange)"></div><span style="color:#F0B860">Onay Bekliyor</span></div>
+    <div class="leg"><div class="leg-dot" style="background:rgba(91,189,138,0.18);border-color:#5BBD8A"></div><span style="color:#7DD4A8">Tamamlandı</span></div>
+    <div class="leg" style="margin-left:auto;color:var(--text3);font-size:11px">Boş güne tıkla → ekle</div>
+  </div>
+</div>
+
+<!-- LİSTE SEKMESİ -->
+<div id="tab-liste" class="list-wrap" style="display:none">
+  <div class="list-filter" id="listFilter">
+    <button class="filter-btn active" onclick="filterList('hepsi',this)">Hepsi</button>
+    <button class="filter-btn" onclick="filterList('dolu',this)">🔴 Dolu</button>
+    <button class="filter-btn" onclick="filterList('opsiyon',this)">🔵 Opsiyon</button>
+    <button class="filter-btn" onclick="filterList('onay-bekliyor',this)">🟠 Onay</button>
+    <button class="filter-btn" onclick="filterList('tamamlandi',this)">🟢 Tamamlandı</button>
+  </div>
+  <div id="listContent"></div>
+</div>
+
+<!-- ÖZET SEKMESİ -->
+<div id="tab-ozet" style="display:none;padding:16px">
+  <div id="ozetContent"></div>
+</div>
+
+<!-- AYARLAR SEKMESİ -->
+<div id="tab-ayarlar" style="display:none;padding:16px 14px 40px">
+  <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);margin-bottom:6px">Görünüm Ayarları</div>
+  <div style="font-size:12px;color:var(--text3);margin-bottom:24px">Takvim ve uygulama renklerini kişiselleştirin</div>
+
+  <!-- TEMALAR -->
+  <div class="ay-section">
+    <div class="ay-title">🎨 Hazır Temalar</div>
+    <div class="theme-grid" id="themeGrid">
+      <div class="theme-card active" onclick="applyTheme('gece')" id="theme-gece">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#0D0D0F,#1A1510)"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px">🌙</div></div>
+        <div class="theme-name">Gece</div>
+      </div>
+      <div class="theme-card" onclick="applyTheme('okyanus')" id="theme-okyanus">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#071525,#0A2540)"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px">🌊</div></div>
+        <div class="theme-name">Okyanus</div>
+      </div>
+      <div class="theme-card" onclick="applyTheme('orman')" id="theme-orman">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#081510,#0F2018)"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px">🌿</div></div>
+        <div class="theme-name">Orman</div>
+      </div>
+      <div class="theme-card" onclick="applyTheme('gunbatimi')" id="theme-gunbatimi">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#1A0A0A,#251510)"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px">🌅</div></div>
+        <div class="theme-name">Gün Batımı</div>
+      </div>
+      <div class="theme-card" onclick="applyTheme('lavanta')" id="theme-lavanta">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#100D1A,#1A1525)"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px">💜</div></div>
+        <div class="theme-name">Lavanta</div>
+      </div>
+      <div class="theme-card" onclick="applyTheme('beyaz')" id="theme-beyaz">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#F5F5F0,#E8E8E0)"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px">☁️</div></div>
+        <div class="theme-name">Açık</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARKAPLAN RENGİ -->
+  <div class="ay-section">
+    <div class="ay-title">🖼 Arka Plan Rengi</div>
+    <div class="color-row">
+      <div class="color-swatch" style="background:#0D0D0F;border:2px solid var(--gold)" onclick="setBg('#0D0D0F')"></div>
+      <div class="color-swatch" style="background:#071525" onclick="setBg('#071525')"></div>
+      <div class="color-swatch" style="background:#0F1A12" onclick="setBg('#0F1A12')"></div>
+      <div class="color-swatch" style="background:#1A0D0D" onclick="setBg('#1A0D0D')"></div>
+      <div class="color-swatch" style="background:#100D1A" onclick="setBg('#100D1A')"></div>
+      <div class="color-swatch" style="background:#1A1A1A" onclick="setBg('#1A1A1A')"></div>
+      <div class="color-swatch cp-wrap"><input type="color" id="bgColorPicker" value="#0D0D0F" oninput="setBg(this.value)" title="Özel renk"><span>+</span></div>
+    </div>
+  </div>
+
+  <!-- GÜN SAYISI RENGİ -->
+  <div class="ay-section">
+    <div class="ay-title">🔢 Gün Sayısı Rengi</div>
+    <div class="color-row">
+      <div class="color-swatch" style="background:#FFFFFF" onclick="setDayColor('#FFFFFF')">A</div>
+      <div class="color-swatch" style="background:#F0EAE0" onclick="setDayColor('#F0EAE0')">A</div>
+      <div class="color-swatch" style="background:#C9A96E" onclick="setDayColor('#C9A96E')">A</div>
+      <div class="color-swatch" style="background:#7AADEE" onclick="setDayColor('#7AADEE')">A</div>
+      <div class="color-swatch" style="background:#7DD4A8" onclick="setDayColor('#7DD4A8')">A</div>
+      <div class="color-swatch" style="background:#F0B860" onclick="setDayColor('#F0B860')">A</div>
+      <div class="color-swatch cp-wrap"><input type="color" id="dayColorPicker" value="#FFFFFF" oninput="setDayColor(this.value)" title="Özel renk"><span>+</span></div>
+    </div>
+  </div>
+
+  <!-- GÜN ARKAPLAN RENGİ -->
+  <div class="ay-section">
+    <div class="ay-title">⬜ Gün Kutu Rengi</div>
+    <div class="color-row">
+      <div class="color-swatch trans-swatch" onclick="setDayBg('rgba(255,255,255,0.06)')">●</div>
+      <div class="color-swatch" style="background:rgba(201,169,110,0.15)" onclick="setDayBg('rgba(201,169,110,0.15)')"></div>
+      <div class="color-swatch" style="background:rgba(91,143,212,0.15)" onclick="setDayBg('rgba(91,143,212,0.15)')"></div>
+      <div class="color-swatch" style="background:rgba(91,189,138,0.15)" onclick="setDayBg('rgba(91,189,138,0.15)')"></div>
+      <div class="color-swatch" style="background:rgba(255,255,255,0.12)" onclick="setDayBg('rgba(255,255,255,0.12)')"></div>
+      <div class="color-swatch" style="background:rgba(255,255,255,0.03)" onclick="setDayBg('rgba(255,255,255,0.03)')">▪</div>
+      <div class="color-swatch cp-wrap"><input type="color" id="dayBgPicker" value="#1C1C22" oninput="setDayBgSolid(this.value)" title="Özel renk"><span>+</span></div>
+    </div>
+  </div>
+
+  <!-- VURGU RENGİ -->
+  <div class="ay-section">
+    <div class="ay-title">✨ Vurgu Rengi (Altın)</div>
+    <div class="color-row">
+      <div class="color-swatch" style="background:#C9A96E" onclick="setAccent('#C9A96E','rgba(201,169,110,0.15)')"></div>
+      <div class="color-swatch" style="background:#E8C98A" onclick="setAccent('#E8C98A','rgba(232,201,138,0.15)')"></div>
+      <div class="color-swatch" style="background:#5B8FD4" onclick="setAccent('#5B8FD4','rgba(91,143,212,0.15)')"></div>
+      <div class="color-swatch" style="background:#5BBD8A" onclick="setAccent('#5BBD8A','rgba(91,189,138,0.15)')"></div>
+      <div class="color-swatch" style="background:#CF72A8" onclick="setAccent('#CF72A8','rgba(207,114,168,0.15)')"></div>
+      <div class="color-swatch" style="background:#E07070" onclick="setAccent('#E07070','rgba(224,112,112,0.15)')"></div>
+      <div class="color-swatch cp-wrap"><input type="color" id="accentPicker" value="#C9A96E" oninput="setAccentCustom(this.value)" title="Özel renk"><span>+</span></div>
+    </div>
+  </div>
+
+  <!-- YAZI BOYUTU -->
+  <div class="ay-section">
+    <div class="ay-title">🔡 Gün Sayısı Boyutu</div>
+    <div class="size-row">
+      <button class="size-btn" onclick="setDayFontSize(13)">S</button>
+      <button class="size-btn active-size" onclick="setDayFontSize(16)">M</button>
+      <button class="size-btn" onclick="setDayFontSize(20)">L</button>
+      <button class="size-btn" onclick="setDayFontSize(24)">XL</button>
+    </div>
+  </div>
+
+  <!-- TAKVİM BOŞLUK -->
+  <div class="ay-section">
+    <div class="ay-title">📐 Gün Arası Boşluk</div>
+    <div class="size-row">
+      <button class="size-btn" onclick="setCalGap(2)">Sıkışık</button>
+      <button class="size-btn active-size" onclick="setCalGap(5)">Normal</button>
+      <button class="size-btn" onclick="setCalGap(8)">Geniş</button>
+    </div>
+  </div>
+
+  <!-- KÖŞE YUVARLAKLIĞI -->
+  <div class="ay-section">
+    <div class="ay-title">⬜ Köşe Yuvarlaklığı</div>
+    <div class="size-row">
+      <button class="size-btn" onclick="setDayRadius(4)" style="border-radius:4px">Köşeli</button>
+      <button class="size-btn active-size" onclick="setDayRadius(12)" style="border-radius:12px">Normal</button>
+      <button class="size-btn" onclick="setDayRadius(50)" style="border-radius:50%">Yuvarlak</button>
+    </div>
+  </div>
+
+  <button onclick="resetAyarlar()" style="width:100%;background:transparent;border:1px solid var(--text3);color:var(--text3);padding:12px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;margin-top:8px">🔄 Varsayılana Sıfırla</button>
+</div>
+
+<!-- YENİ / DÜZENLEME MODALİ -->
+<div class="modal-overlay" id="formModal" onclick="closeFormIfOut(event)">
+  <div class="modal" style="position:relative">
+    <div class="modal-handle"></div>
+    <button class="close-modal" onclick="closeForm()">✕</button>
+    <div class="modal-title" id="formTitle">Yeni Rezervasyon</div>
+
+    <div class="form-group">
+      <label class="form-label">Durum</label>
+      <div class="status-row">
+        <div class="status-opt" id="opt-dolu" onclick="setStatus('dolu')">🔴<br>Dolu</div>
+        <div class="status-opt" id="opt-opsiyon" onclick="setStatus('opsiyon')">🔵<br>Opsiyon</div>
+        <div class="status-opt" id="opt-onay" onclick="setStatus('onay-bekliyor')">🟠<br>Onay Bekliyor</div>
+        <div class="status-opt" id="opt-tamamlandi" onclick="setStatus('tamamlandi')">🟢<br>Tamamlandı</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Müşteri Adı *</label>
+        <input class="form-input" id="f-musteri" placeholder="Ad Soyad">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefon</label>
+        <input class="form-input" id="f-telefon" type="tel" placeholder="05xx...">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Tur Tarihi *</label>
+        <input class="form-input" id="f-tur-tarihi" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Organizasyon</label>
+        <select class="form-select" id="f-org">
+          <option value="">Seçin</option>
+          <option>Düğün</option>
+          <option>Nişan</option>
+          <option>Mezuniyet</option>
+          <option>Doğum Günü</option>
+          <option>Yıldönümü</option>
+          <option>Kurumsal</option>
+          <option>Özel Tur</option>
+          <option>Diğer</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Başlangıç Tarihi</label>
+        <input class="form-input" id="f-baslangic" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bitiş Tarihi</label>
+        <input class="form-input" id="f-bitis" type="date">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Gündüz / Gece</label>
+        <select class="form-select" id="f-zaman">
+          <option value="">Seçin</option>
+          <option>Gündüz Turu</option>
+          <option>Gece Turu</option>
+          <option>Gündüz + Gece</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kişi Sayısı</label>
+        <input class="form-input" id="f-kisi" type="number" placeholder="0">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Yemek</label>
+        <select class="form-select" id="f-yemek">
+          <option value="">Seçin</option>
+          <option>Yemekli</option>
+          <option>Yemeksiz</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kokteyl</label>
+        <select class="form-select" id="f-kokteyl">
+          <option value="">Seçin</option>
+          <option>Var</option>
+          <option>Yok</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Alış Yeri</label>
+        <input class="form-input" id="f-alis" placeholder="Nereden...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bırakış Yeri</label>
+        <input class="form-input" id="f-birakis" placeholder="Nereye...">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Toplam Ücret (₺)</label>
+        <input class="form-input" id="f-toplam" type="number" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Alınan Kapora (₺)</label>
+        <input class="form-input" id="f-kapora" type="number" placeholder="0">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Not</label>
+      <textarea class="form-textarea" id="f-not" placeholder="Eklemek istediğiniz notlar..."></textarea>
+    </div>
+
+    <button class="form-submit" onclick="saveRez()">💾 Kaydet</button>
+    <button class="form-delete" id="deleteBtn" style="display:none" onclick="deleteRez()">🗑 Sil</button>
+  </div>
+</div>
+
+<!-- DETAY MODALİ -->
+<div class="modal-overlay" id="detailModal" onclick="closeDetailIfOut(event)">
+  <div class="modal" style="position:relative">
+    <div class="modal-handle"></div>
+    <button class="close-modal" onclick="closeDetail()">✕</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  STORAGE (localStorage — her iki telefon için Claude persistent storage)
+// ═══════════════════════════════════════════
+const STORAGE_KEY = 'raksi_rezervasyonlar_v2';
+
+async function loadData() {
+  try {
+    const r = await window.storage.get(STORAGE_KEY, true); // shared=true
+    return r ? JSON.parse(r.value) : [];
+  } catch(e) {
+    // localStorage fallback
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch(e2){ return []; }
+  }
+}
+
+async function saveData(data) {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(data), true); // shared=true
+  } catch(e) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+}
+
+let rezervasyonlar = [];
+let currentMonth = new Date().getMonth();
+let currentYear  = new Date().getFullYear();
+let editId       = null;
+let currentStatus = 'dolu';
+let currentFilter = 'hepsi';
+
+
+// ═══════════════════════════════════════════
+//  AYARLAR
+// ═══════════════════════════════════════════
+const AYARLAR_KEY = 'raksi_ayarlar_v1';
+
+const TEMALAR = {
+  gece:     { bg:'#0D0D0F', bg2:'#141418', bg3:'#1C1C22', card:'#18181E', gold:'#C9A96E', border:'rgba(201,169,110,0.15)' },
+  okyanus:  { bg:'#071525', bg2:'#0A1E35', bg3:'#0D2540', card:'#0A1C30', gold:'#5B9FD4', border:'rgba(91,159,212,0.15)' },
+  orman:    { bg:'#081510', bg2:'#0F2018', bg3:'#152B1E', card:'#102018', gold:'#5BBD8A', border:'rgba(91,189,138,0.15)' },
+  gunbatimi:{ bg:'#1A0A0A', bg2:'#251510', bg3:'#301A12', card:'#201008', gold:'#E09B45', border:'rgba(224,155,69,0.15)' },
+  lavanta:  { bg:'#100D1A', bg2:'#181525', bg3:'#201C2E', card:'#161320', gold:'#9B72CF', border:'rgba(155,114,207,0.15)' },
+  beyaz:    { bg:'#F0F0EC', bg2:'#E8E8E2', bg3:'#DCDCD6', card:'#F5F5F0', gold:'#8B6914', border:'rgba(139,105,20,0.2)' },
+};
+
+let ayarlar = {
+  theme: 'gece',
+  dayColor: '#FFFFFF',
+  dayBg: 'rgba(255,255,255,0.06)',
+  dayFontSize: 16,
+  calGap: 5,
+  dayRadius: 12,
+  accentColor: '#C9A96E',
+};
+
+function saveAyarlar() {
+  try { localStorage.setItem(AYARLAR_KEY, JSON.stringify(ayarlar)); } catch(e){}
+}
+
+function loadAyarlar() {
+  try {
+    const s = localStorage.getItem(AYARLAR_KEY);
+    if(s) { ayarlar = {...ayarlar, ...JSON.parse(s)}; }
+  } catch(e){}
+  applyAyarlar();
+}
+
+function applyAyarlar() {
+  const r = document.documentElement.style;
+  // Tema uygula
+  const t = TEMALAR[ayarlar.theme] || TEMALAR.gece;
+  r.setProperty('--bg',    t.bg);
+  r.setProperty('--bg2',   t.bg2);
+  r.setProperty('--bg3',   t.bg3);
+  r.setProperty('--card',  t.card);
+  r.setProperty('--gold',  ayarlar.accentColor || t.gold);
+  r.setProperty('--border',t.border);
+  // Beyaz temada text dark yap
+  if(ayarlar.theme === 'beyaz') {
+    r.setProperty('--text','#1A1A1A');
+    r.setProperty('--text2','#555555');
+    r.setProperty('--text3','#888888');
+  } else {
+    r.setProperty('--text','#F0EAE0');
+    r.setProperty('--text2','#9A9080');
+    r.setProperty('--text3','#5A5450');
+  }
+  // Gün stilleri - custom CSS inject
+  let style = document.getElementById('ayarlar-style');
+  if(!style){ style=document.createElement('style'); style.id='ayarlar-style'; document.head.appendChild(style); }
+  style.textContent = `
+    .cal-day { color: ${ayarlar.dayColor} !important; background: ${ayarlar.dayBg} !important; font-size: ${ayarlar.dayFontSize}px !important; border-radius: ${ayarlar.dayRadius}px !important; }
+    .cal-day.freeday { color: ${ayarlar.dayColor} !important; background: ${ayarlar.dayBg} !important; }
+    .cal-day.past { color: ${ayarlar.dayColor} !important; opacity:.4; }
+    .cal-grid { gap: ${ayarlar.calGap}px !important; }
+    .cal-day.dolu { color:#FF7070 !important; background:rgba(224,85,85,0.22) !important; }
+    .cal-day.opsiyon { color:#7AADEE !important; background:rgba(91,143,212,0.2) !important; }
+    .cal-day.onay-bekliyor { color:#F0B860 !important; background:rgba(224,155,69,0.2) !important; }
+    .cal-day.tamamlandi { color:#7DD4A8 !important; background:rgba(91,189,138,0.18) !important; }
+    .cal-day.today { color:var(--gold) !important; background:rgba(201,169,110,0.12) !important; border-color:var(--gold) !important; }
+    .size-btn.active-size { background:rgba(201,169,110,0.15); border-color:var(--gold); color:var(--gold); }
+  `;
+  // UI sync
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('active'));
+  const tc = document.getElementById('theme-'+ayarlar.theme);
+  if(tc) tc.classList.add('active');
+  const dp = document.getElementById('dayColorPicker');
+  if(dp) dp.value = ayarlar.dayColor;
+  const bp = document.getElementById('bgColorPicker');
+  if(bp) bp.value = t.bg;
+  const ap = document.getElementById('accentPicker');
+  if(ap) ap.value = ayarlar.accentColor || t.gold;
+}
+
+function applyTheme(name) {
+  ayarlar.theme = name;
+  const t = TEMALAR[name];
+  if(t) ayarlar.accentColor = t.gold;
+  saveAyarlar(); applyAyarlar();
+  toast('✨ Tema uygulandı');
+}
+
+function setBg(color) {
+  // Manuel bg için özel tema oluştur
+  const r = document.documentElement.style;
+  r.setProperty('--bg', color);
+  const hex = color.replace('#','');
+  const num = parseInt(hex,16);
+  const lighter = '#'+(Math.min(num+0x101010,0xFFFFFF)).toString(16).padStart(6,'0');
+  r.setProperty('--bg2', lighter);
+  const picker = document.getElementById('bgColorPicker');
+  if(picker) picker.value = color.startsWith('#') ? color : '#0D0D0F';
+  saveAyarlar(); toast('🖼 Arka plan güncellendi');
+}
+
+function setDayColor(color) {
+  ayarlar.dayColor = color;
+  saveAyarlar(); applyAyarlar();
+  const p = document.getElementById('dayColorPicker');
+  if(p) p.value = color;
+  toast('🔢 Sayı rengi güncellendi');
+}
+
+function setDayBg(color) {
+  ayarlar.dayBg = color;
+  saveAyarlar(); applyAyarlar();
+  toast('⬜ Kutu rengi güncellendi');
+}
+
+function setDayBgSolid(color) {
+  // hex'i rgba'ya çevir
+  const r=parseInt(color.slice(1,3),16), g=parseInt(color.slice(3,5),16), b=parseInt(color.slice(5,7),16);
+  ayarlar.dayBg = `rgba(${r},${g},${b},0.5)`;
+  saveAyarlar(); applyAyarlar();
+}
+
+function setAccent(color, border) {
+  ayarlar.accentColor = color;
+  document.documentElement.style.setProperty('--gold', color);
+  document.documentElement.style.setProperty('--border', border);
+  const p = document.getElementById('accentPicker');
+  if(p) p.value = color;
+  saveAyarlar(); applyAyarlar();
+  toast('✨ Vurgu rengi güncellendi');
+}
+
+function setAccentCustom(color) {
+  const r=parseInt(color.slice(1,3),16), g=parseInt(color.slice(3,5),16), b=parseInt(color.slice(5,7),16);
+  setAccent(color, `rgba(${r},${g},${b},0.15)`);
+}
+
+function setDayFontSize(size) {
+  ayarlar.dayFontSize = size;
+  document.querySelectorAll('.size-btn').forEach(b=>{
+    if(b.textContent.trim()==={13:'S',16:'M',20:'L',24:'XL'}[size]) b.classList.add('active-size');
+    else if(['S','M','L','XL'].includes(b.textContent.trim())) b.classList.remove('active-size');
+  });
+  saveAyarlar(); applyAyarlar();
+  toast('🔡 Boyut güncellendi');
+}
+
+function setCalGap(gap) {
+  ayarlar.calGap = gap;
+  document.querySelectorAll('.size-btn').forEach(b=>{
+    if(b.textContent.trim()==={2:'Sıkışık',5:'Normal',8:'Geniş'}[gap]) b.classList.add('active-size');
+    else if(['Sıkışık','Normal','Geniş'].includes(b.textContent.trim())) b.classList.remove('active-size');
+  });
+  saveAyarlar(); applyAyarlar();
+  toast('📐 Boşluk güncellendi');
+}
+
+function setDayRadius(r) {
+  ayarlar.dayRadius = r;
+  const lbl = {4:'Köşeli',12:'Normal',50:'Yuvarlak'}[r];
+  document.querySelectorAll('.size-btn').forEach(b=>{
+    if(b.textContent.trim()===lbl) b.classList.add('active-size');
+    else if(['Köşeli','Normal','Yuvarlak'].includes(b.textContent.trim())) b.classList.remove('active-size');
+  });
+  saveAyarlar(); applyAyarlar();
+  toast('⬜ Köşe yuvarlaklığı güncellendi');
+}
+
+function resetAyarlar() {
+  ayarlar = { theme:'gece', dayColor:'#FFFFFF', dayBg:'rgba(255,255,255,0.06)', dayFontSize:16, calGap:5, dayRadius:12, accentColor:'#C9A96E' };
+  saveAyarlar(); applyAyarlar();
+  toast('🔄 Varsayılana sıfırlandı');
+}
+
+// ═══════════════════════════════════════════
+//  UYGULAMA BAŞLAT
+// ═══════════════════════════════════════════
+async function init() {
+  rezervasyonlar = await loadData();
+  loadAyarlar();
+  renderCalendar();
+  renderList();
+  renderOzet();
+  // Her 30 saniyede senkronize et
+  setInterval(async () => {
+    rezervasyonlar = await loadData();
+    renderCalendar();
+    renderList();
+    renderOzet();
+  }, 30000);
+}
+
+// ═══════════════════════════════════════════
+//  TAKVİM
+// ═══════════════════════════════════════════
+function renderCalendar() {
+  const months = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran',
+                  'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  document.getElementById('calTitle').textContent = months[currentMonth]+' '+currentYear;
+  const grid = document.getElementById('calGrid');
+  const days = ['PT','SA','ÇA','PE','CU','CT','PZ'];
+  let html = days.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const offset = firstDay === 0 ? 6 : firstDay-1;
+  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
+  const today = new Date();
+
+  for(let i=0;i<offset;i++) html+=`<div class="cal-day empty"></div>`;
+
+  const statusIcon = {
+    'dolu':'🔴','opsiyon':'🔵','onay-bekliyor':'🟠','tamamlandi':'🟢'
+  };
+
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayDate = new Date(currentYear, currentMonth, d);
+    const isPast  = dayDate < new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const isToday = d===today.getDate() && currentMonth===today.getMonth() && currentYear===today.getFullYear();
+
+    const rezsOnDay = rezervasyonlar.filter(r=>{
+      if(r.turTarihi===dateStr) return true;
+      if(r.baslangic && r.bitis && r.baslangic<=dateStr && r.bitis>=dateStr) return true;
+      return false;
+    });
+
+    const hasRez = rezsOnDay.length > 0;
+    let cls = 'cal-day';
+    if(isPast && !hasRez) cls += ' past';
+    if(!hasRez && !isToday) cls += ' freeday';
+    if(isToday) cls += ' today';
+
+    let statusCls = '';
+    let icoHtml = '';
+    let countHtml = '';
+
+    if(hasRez){
+      const statuses=['dolu','opsiyon','onay-bekliyor','tamamlandi'];
+      const found = statuses.find(s=>rezsOnDay.some(r=>r.durum===s));
+      if(found){ cls += ` ${found}`; statusCls = found; }
+      icoHtml = `<div class="day-ico">${statusIcon[statusCls]||'📅'}</div>`;
+      if(rezsOnDay.length > 1) countHtml = `<div class="day-count">${rezsOnDay.length}</div>`;
+    }
+
+    const clickHandler = hasRez
+      ? `onclick="showDayRezs('${dateStr}')"`
+      : `onclick="openNewForDate('${dateStr}')"`;
+
+    html += `<div class="${cls}" ${clickHandler}>${countHtml}${d}${icoHtml}</div>`;
+  }
+  grid.innerHTML = html;
+
+  // Ay istatistiği
+  const ayRezs = rezervasyonlar.filter(r=>{
+    const d = r.turTarihi||'';
+    return d.startsWith(`${currentYear}-${String(currentMonth+1).padStart(2,'0')}`);
+  });
+  const stat = document.getElementById('calMonthStat');
+  if(stat){
+    const dolu = ayRezs.filter(r=>r.durum==='dolu').length;
+    const ops  = ayRezs.filter(r=>r.durum==='opsiyon').length;
+    if(ayRezs.length > 0)
+      stat.textContent = `${ayRezs.length} rezervasyon · ${dolu} dolu · ${ops} opsiyon`;
+    else
+      stat.textContent = 'Bu ay rezervasyon yok';
+  }
+}
+
+function changeMonth(dir){
+  currentMonth+=dir;
+  if(currentMonth>11){currentMonth=0;currentYear++;}
+  if(currentMonth<0) {currentMonth=11;currentYear--;}
+  renderCalendar();
+}
+
+function showDayRezs(dateStr){
+  const rezsOnDay = rezervasyonlar.filter(r=>{
+    if(r.turTarihi===dateStr) return true;
+    if(r.baslangic && r.bitis && r.baslangic<=dateStr && r.bitis>=dateStr) return true;
+    return false;
+  });
+  if(rezsOnDay.length===1) showDetail(rezsOnDay[0].id);
+  else {
+    // Birden fazla ise listeyi göster — kısaca
+    const list = rezsOnDay.map(r=>`<div class="rez-card ${r.durum}" onclick="showDetail('${r.id}');closeDetail2()" style="cursor:pointer;margin-bottom:8px">
+      <div class="rc-top"><span class="rc-name">${r.musteri}</span><span class="rc-badge ${r.durum}">${statusLabel(r.durum)}</span></div>
+      <div class="rc-org">${r.org||'—'}</div>
+    </div>`).join('');
+    document.getElementById('detailContent').innerHTML=`<div class="modal-title">${dateStr} Rezervasyonları</div>${list}`;
+    document.getElementById('detailModal').classList.add('open');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  LİSTE
+// ═══════════════════════════════════════════
+function renderList(){
+  let filtered = currentFilter==='hepsi' ? rezervasyonlar
+    : rezervasyonlar.filter(r=>r.durum===currentFilter);
+  filtered = [...filtered].sort((a,b)=>(a.turTarihi||'').localeCompare(b.turTarihi||''));
+  const c = document.getElementById('listContent');
+  if(!filtered.length){
+    c.innerHTML=`<div class="empty"><div class="empty-icon">📅</div>Rezervasyon bulunamadı</div>`;
+    return;
+  }
+  c.innerHTML = filtered.map(r=>{
+    const kalan = (Number(r.toplam)||0)-(Number(r.kapora)||0);
+    return `<div class="rez-card ${r.durum}" onclick="showDetail('${r.id}')">
+      <div class="rc-top">
+        <div>
+          <div class="rc-name">${r.musteri||'—'}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">📅 ${r.turTarihi||'—'}</div>
+        </div>
+        <span class="rc-badge ${r.durum}">${statusLabel(r.durum)}</span>
+      </div>
+      <div class="rc-org">${orgIcon(r.org)} ${r.org||'—'}</div>
+      <div class="rc-row">
+        ${r.zaman?`<span class="rc-chip">${r.zaman}</span>`:''}
+        ${r.kisi?`<span class="rc-chip">👥 ${r.kisi} kişi</span>`:''}
+        ${r.yemek?`<span class="rc-chip">${r.yemek}</span>`:''}
+        ${r.kokteyl?`<span class="rc-chip">🥂 Kokteyl: ${r.kokteyl}</span>`:''}
+      </div>
+      <div class="rc-fin">
+        <div class="rc-fin-item"><div class="rc-fin-label">Kapora</div><div class="rc-fin-val kapora">₺${fmt(r.kapora)}</div></div>
+        <div class="rc-fin-item"><div class="rc-fin-label">Kalan Bakiye</div><div class="rc-fin-val kalan">₺${fmt(kalan)}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterList(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+// ═══════════════════════════════════════════
+//  ÖZET
+// ═══════════════════════════════════════════
+function renderOzet(){
+  const c = document.getElementById('ozetContent');
+  const toplam = rezervasyonlar.reduce((s,r)=>s+(Number(r.toplam)||0),0);
+  const kapora = rezervasyonlar.reduce((s,r)=>s+(Number(r.kapora)||0),0);
+  const kalan  = toplam - kapora;
+  const dolu   = rezervasyonlar.filter(r=>r.durum==='dolu').length;
+  const opsiyon= rezervasyonlar.filter(r=>r.durum==='opsiyon').length;
+  const onay   = rezervasyonlar.filter(r=>r.durum==='onay-bekliyor').length;
+  const tamam  = rezervasyonlar.filter(r=>r.durum==='tamamlandi').length;
+
+  // Bu ay
+  const now = new Date();
+  const buAy = rezervasyonlar.filter(r=>{
+    const d = new Date(r.turTarihi);
+    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+  });
+  const buAyKapora = buAy.reduce((s,r)=>s+(Number(r.kapora)||0),0);
+
+  c.innerHTML=`
+    <div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:16px">Finansal Özet</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+      <div style="background:var(--card);border-radius:12px;padding:14px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px">TOPLAM CİRO</div>
+        <div style="font-size:16px;font-weight:700;color:var(--gold)">₺${fmt(toplam)}</div>
+      </div>
+      <div style="background:var(--card);border-radius:12px;padding:14px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px">ALINAN KAPORA</div>
+        <div style="font-size:16px;font-weight:700;color:var(--green)">₺${fmt(kapora)}</div>
+      </div>
+      <div style="background:var(--card);border-radius:12px;padding:14px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px">KALAN BAKİYE</div>
+        <div style="font-size:16px;font-weight:700;color:var(--orange)">₺${fmt(kalan)}</div>
+      </div>
+    </div>
+    <div style="background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:16px">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px">📅 Bu Ay (${now.toLocaleString('tr-TR',{month:'long'})})</div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="color:var(--text3);font-size:13px">${buAy.length} rezervasyon</span>
+        <span style="color:var(--green);font-weight:600">₺${fmt(buAyKapora)} kapora alındı</span>
+      </div>
+    </div>
+    <div style="font-family:'Playfair Display',serif;font-size:16px;color:var(--gold);margin-bottom:12px">Durum Dağılımı</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:var(--red-soft);border:1px solid var(--red);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:700;color:var(--red)">${dolu}</div>
+        <div style="font-size:11px;color:var(--red)">Dolu</div>
+      </div>
+      <div style="background:var(--blue-soft);border:1px solid var(--blue);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:700;color:var(--blue)">${opsiyon}</div>
+        <div style="font-size:11px;color:var(--blue)">Opsiyon</div>
+      </div>
+      <div style="background:var(--orange-soft);border:1px solid var(--orange);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:700;color:var(--orange)">${onay}</div>
+        <div style="font-size:11px;color:var(--orange)">Onay Bekliyor</div>
+      </div>
+      <div style="background:var(--green-soft);border:1px solid rgba(91,189,138,.4);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:700;color:var(--green)">${tamam}</div>
+        <div style="font-size:11px;color:var(--green)">Tamamlandı</div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  DETAY
+// ═══════════════════════════════════════════
+function showDetail(id){
+  const r = rezervasyonlar.find(x=>x.id===id);
+  if(!r) return;
+  const kalan=(Number(r.toplam)||0)-(Number(r.kapora)||0);
+  document.getElementById('detailContent').innerHTML=`
+    <div class="rc-top" style="margin-bottom:12px">
+      <div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--text)">${r.musteri||'—'}</div>
+      <div class="rc-org" style="margin-top:4px">${orgIcon(r.org)} ${r.org||'—'}</div></div>
+      <span class="rc-badge ${r.durum}" style="font-size:11px;padding:5px 10px">${statusLabel(r.durum)}</span>
+    </div>
+    <div class="det-fin">
+      <div class="det-fin-box toplam"><div class="lbl">TOPLAM</div><div class="val">₺${fmt(r.toplam)}</div></div>
+      <div class="det-fin-box kapora"><div class="lbl">KAPORA</div><div class="val">₺${fmt(r.kapora)}</div></div>
+      <div class="det-fin-box kalan"><div class="lbl">KALAN</div><div class="val">₺${fmt(kalan)}</div></div>
+    </div>
+    <div class="det-section">
+      <div class="det-section-title">Tur Bilgileri</div>
+      <div class="det-grid">
+        <div class="det-item"><div class="det-item-label">Tur Tarihi</div><div class="det-item-val">📅 ${r.turTarihi||'—'}</div></div>
+        <div class="det-item"><div class="det-item-label">Zaman</div><div class="det-item-val">${r.zaman||'—'}</div></div>
+        <div class="det-item"><div class="det-item-label">Başlangıç</div><div class="det-item-val">${r.baslangic||'—'}</div></div>
+        <div class="det-item"><div class="det-item-label">Bitiş</div><div class="det-item-val">${r.bitis||'—'}</div></div>
+        <div class="det-item"><div class="det-item-label">Kişi Sayısı</div><div class="det-item-val">👥 ${r.kisi||'—'}</div></div>
+        <div class="det-item"><div class="det-item-label">Yemek / Kokteyl</div><div class="det-item-val">${r.yemek||'—'} · ${r.kokteyl?'🥂 '+r.kokteyl:'—'}</div></div>
+        <div class="det-item full"><div class="det-item-label">Alış → Bırakış</div><div class="det-item-val">📍 ${r.alis||'—'} → ${r.birakis||'—'}</div></div>
+        ${r.not?`<div class="det-item full"><div class="det-item-label">Not</div><div class="det-item-val">${r.not}</div></div>`:''}
+      </div>
+    </div>
+    ${r.telefon?`<a class="tel-link" href="tel:${r.telefon}">📞 ${r.telefon}</a>`:''}
+    <button onclick="openEdit('${r.id}')" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--gold);padding:12px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:12px">✏️ Düzenle</button>
+  `;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function closeDetail(){ document.getElementById('detailModal').classList.remove('open'); }
+function closeDetail2(){ document.getElementById('detailModal').classList.remove('open'); }
+function closeDetailIfOut(e){ if(e.target.id==='detailModal') closeDetail(); }
+
+// ═══════════════════════════════════════════
+//  FORM
+// ═══════════════════════════════════════════
+function openNew(){
+  editId=null; currentStatus='dolu';
+  document.getElementById('formTitle').textContent='Yeni Rezervasyon';
+  document.getElementById('deleteBtn').style.display='none';
+  clearForm();
+  setStatus('dolu');
+  document.getElementById('f-tur-tarihi').value = new Date().toISOString().split('T')[0];
+  document.getElementById('formModal').classList.add('open');
+}
+
+function openNewForDate(dateStr){
+  openNew();
+  document.getElementById('f-tur-tarihi').value=dateStr;
+}
+
+function openEdit(id){
+  closeDetail();
+  const r=rezervasyonlar.find(x=>x.id===id);
+  if(!r) return;
+  editId=id;
+  document.getElementById('formTitle').textContent='Rezervasyonu Düzenle';
+  document.getElementById('deleteBtn').style.display='block';
+  setStatus(r.durum||'dolu');
+  document.getElementById('f-musteri').value=r.musteri||'';
+  document.getElementById('f-telefon').value=r.telefon||'';
+  document.getElementById('f-tur-tarihi').value=r.turTarihi||'';
+  document.getElementById('f-org').value=r.org||'';
+  document.getElementById('f-baslangic').value=r.baslangic||'';
+  document.getElementById('f-bitis').value=r.bitis||'';
+  document.getElementById('f-zaman').value=r.zaman||'';
+  document.getElementById('f-kisi').value=r.kisi||'';
+  document.getElementById('f-yemek').value=r.yemek||'';
+  document.getElementById('f-kokteyl').value=r.kokteyl||'';
+  document.getElementById('f-alis').value=r.alis||'';
+  document.getElementById('f-birakis').value=r.birakis||'';
+  document.getElementById('f-toplam').value=r.toplam||'';
+  document.getElementById('f-kapora').value=r.kapora||'';
+  document.getElementById('f-not').value=r.not||'';
+  document.getElementById('formModal').classList.add('open');
+}
+
+function clearForm(){
+  ['f-musteri','f-telefon','f-tur-tarihi','f-baslangic','f-bitis','f-kisi',
+   'f-alis','f-birakis','f-toplam','f-kapora','f-not'].forEach(id=>document.getElementById(id).value='');
+  ['f-org','f-zaman','f-yemek','f-kokteyl'].forEach(id=>document.getElementById(id).value='');
+}
+
+function setStatus(s){
+  currentStatus=s;
+  document.querySelectorAll('.status-opt').forEach(el=>el.className='status-opt');
+  const map={'dolu':'active-dolu','opsiyon':'active-opsiyon','onay-bekliyor':'active-onay','tamamlandi':'active-tamamlandi'};
+  const idmap={'dolu':'opt-dolu','opsiyon':'opt-opsiyon','onay-bekliyor':'opt-onay','tamamlandi':'opt-tamamlandi'};
+  const el=document.getElementById(idmap[s]);
+  if(el) el.classList.add(map[s]);
+}
+
+async function saveRez(){
+  const musteri=document.getElementById('f-musteri').value.trim();
+  const turTarihi=document.getElementById('f-tur-tarihi').value;
+  if(!musteri){toast('⚠ Müşteri adı zorunlu');return;}
+  if(!turTarihi){toast('⚠ Tur tarihi zorunlu');return;}
+  const rez={
+    id: editId || 'r'+Date.now(),
+    durum: currentStatus,
+    musteri, telefon:document.getElementById('f-telefon').value,
+    turTarihi, org:document.getElementById('f-org').value,
+    baslangic:document.getElementById('f-baslangic').value,
+    bitis:document.getElementById('f-bitis').value,
+    zaman:document.getElementById('f-zaman').value,
+    kisi:document.getElementById('f-kisi').value,
+    yemek:document.getElementById('f-yemek').value,
+    kokteyl:document.getElementById('f-kokteyl').value,
+    alis:document.getElementById('f-alis').value,
+    birakis:document.getElementById('f-birakis').value,
+    toplam:document.getElementById('f-toplam').value,
+    kapora:document.getElementById('f-kapora').value,
+    not:document.getElementById('f-not').value,
+    guncelleme: new Date().toISOString(),
+  };
+  if(editId){
+    const idx=rezervasyonlar.findIndex(x=>x.id===editId);
+    if(idx>-1) rezervasyonlar[idx]=rez;
+  } else {
+    rezervasyonlar.push(rez);
+  }
+  await saveData(rezervasyonlar);
+  closeForm();
+  renderCalendar(); renderList(); renderOzet();
+  toast(editId?'✅ Güncellendi':'✅ Rezervasyon eklendi');
+}
+
+async function deleteRez(){
+  if(!confirm('Bu rezervasyonu silmek istediğinize emin misiniz?')) return;
+  rezervasyonlar=rezervasyonlar.filter(x=>x.id!==editId);
+  await saveData(rezervasyonlar);
+  closeForm();
+  renderCalendar(); renderList(); renderOzet();
+  toast('🗑 Silindi');
+}
+
+function closeForm(){ document.getElementById('formModal').classList.remove('open'); }
+function closeFormIfOut(e){ if(e.target.id==='formModal') closeForm(); }
+
+// ═══════════════════════════════════════════
+//  SEKMELERİ DEĞŞTIR
+// ═══════════════════════════════════════════
+function switchTab(name,btn){
+  ['takvim','liste','ozet','ayarlar'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===name?'':'none';
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='liste') renderList();
+  if(name==='ozet')  renderOzet();
+}
+
+// ═══════════════════════════════════════════
+//  YARDIMCI
+// ═══════════════════════════════════════════
+function statusLabel(s){
+  return {dolu:'DOLU',opsiyon:'OPSİYON','onay-bekliyor':'ONAY BEKLİYOR',tamamlandi:'TAMAMLANDI'}[s]||s;
+}
+function orgIcon(org){
+  const m={'Düğün':'💍','Nişan':'💑','Mezuniyet':'🎓','Doğum Günü':'🎂','Yıldönümü':'💫','Kurumsal':'🏢','Özel Tur':'⚓'};
+  return m[org]||'🎉';
+}
+function fmt(n){ const v=Number(n)||0; return v.toLocaleString('tr-TR'); }
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+init();
+</script>
+</body>
+</html>
