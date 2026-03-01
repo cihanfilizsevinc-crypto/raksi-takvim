@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sosyal Medya Asistanı — Raks-ı Derya</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,400&family=Cinzel:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030D17;--navy:#05111F;--gold:#C9963E;--gold2:#E8C87A;
+  --teal:#4BA8C5;--green:#5BBD8A;--white:#F5EFE6;
+  --t2:rgba(245,239,230,.6);--t3:rgba(245,239,230,.3);
+  --border:rgba(201,150,62,.15);--card:rgba(255,255,255,.025);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+/* HEADER */
+.header{
+  background:linear-gradient(135deg,#020A14,#061828);
+  border-bottom:1px solid var(--border);
+  padding:20px 32px;display:flex;align-items:center;justify-content:space-between;
+}
+.header-logo{font-family:'Cinzel',serif;font-size:13px;letter-spacing:3px;color:var(--gold)}
+.header-logo span{display:block;font-size:9px;letter-spacing:2px;color:var(--t3);margin-top:2px}
+.header-badge{background:rgba(91,189,138,.1);border:1px solid rgba(91,189,138,.25);color:var(--green);padding:5px 14px;border-radius:20px;font-size:11px;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 65px)}
+
+/* SIDEBAR */
+.sidebar{background:rgba(255,255,255,.015);border-right:1px solid var(--border);padding:24px 0}
+.sidebar-section{padding:0 16px;margin-bottom:24px}
+.sidebar-label{font-size:9px;letter-spacing:3px;color:var(--t3);text-transform:uppercase;padding:0 8px;margin-bottom:8px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
+  font-size:13px;color:var(--t2);cursor:pointer;transition:.2s;margin-bottom:2px;
+}
+.nav-item:hover{background:rgba(201,150,62,.06);color:var(--white)}
+.nav-item.active{background:rgba(201,150,62,.1);color:var(--gold);border:1px solid rgba(201,150,62,.2)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+
+.platform-chips{display:flex;flex-direction:column;gap:6px;padding:0 16px}
+.chip{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:12px;color:var(--t2);background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:.2s}
+.chip.active{color:var(--white)}
+.chip.ig.active{background:rgba(225,48,108,.08);border-color:rgba(225,48,108,.25);color:#F06292}
+.chip.wa.active{background:rgba(37,211,102,.08);border-color:rgba(37,211,102,.25);color:#25D366}
+.chip.tw.active{background:rgba(29,161,242,.08);border-color:rgba(29,161,242,.25);color:#1DA1F2}
+
+/* MAIN */
+.main{padding:32px;overflow-y:auto;max-height:calc(100vh - 65px)}
+
+/* TOOL CARDS */
+.tool-header{margin-bottom:28px}
+.tool-eye{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:6px}
+.tool-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300}
+.tool-title em{font-style:italic;color:var(--gold2)}
+.tool-sub{font-size:13px;color:var(--t2);margin-top:6px;line-height:1.6}
+
+/* INPUT AREA */
+.input-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.input-label{font-size:10px;letter-spacing:2px;color:var(--teal);text-transform:uppercase;margin-bottom:8px;display:block}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+select,textarea,input[type=text]{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:10px 14px;color:var(--white);font-family:'DM Sans',sans-serif;
+  font-size:13px;outline:none;transition:.2s;width:100%;
+}
+select option{background:#0A1828;color:var(--white)}
+textarea{resize:vertical;min-height:90px;line-height:1.6}
+input[type=text]::placeholder,textarea::placeholder{color:rgba(245,239,230,.2)}
+select:focus,textarea:focus,input[type=text]:focus{border-color:rgba(201,150,62,.4);box-shadow:0 0 0 3px rgba(201,150,62,.07)}
+
+.platform-check{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.pcheck{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.08);font-size:12px;cursor:pointer;transition:.2s;color:var(--t2)}
+.pcheck.sel-ig{background:rgba(225,48,108,.1);border-color:rgba(225,48,108,.3);color:#F06292}
+.pcheck.sel-wa{background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25D366}
+.pcheck.sel-tw{background:rgba(29,161,242,.1);border-color:rgba(29,161,242,.3);color:#1DA1F2}
+
+/* GENERATE BUTTON */
+.gen-btn{
+  background:linear-gradient(135deg,var(--gold),#8B6020);color:#05111F;
+  padding:13px 28px;border-radius:12px;font-family:'Cinzel',serif;font-size:11px;
+  letter-spacing:2px;font-weight:700;border:none;cursor:pointer;transition:.3s;
+  display:flex;align-items:center;gap:8px;
+}
+.gen-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(201,150,62,.3)}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* RESULT */
+.result-card{
+  background:rgba(0,0,0,.3);border:1px solid rgba(201,150,62,.2);
+  border-radius:16px;padding:24px;margin-top:20px;display:none;
+  animation:fadeIn .4s ease;
+}
+.result-card.show{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.result-platform{font-size:10px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:12px}
+.result-text{font-size:14px;color:var(--white);line-height:1.8;white-space:pre-wrap}
+.result-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.copy-btn{
+  background:rgba(201,150,62,.1);border:1px solid rgba(201,150,62,.25);
+  color:var(--gold);padding:7px 16px;border-radius:8px;font-size:12px;
+  cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;
+}
+.copy-btn:hover{background:rgba(201,150,62,.2)}
+.copy-btn.ok{background:rgba(91,189,138,.1);border-color:rgba(91,189,138,.3);color:var(--green)}
+
+/* LOADING */
+.loading{display:none;align-items:center;gap:12px;padding:20px;color:var(--t2);font-size:14px}
+.loading.show{display:flex}
+.spinner{width:20px;height:20px;border:2px solid rgba(201,150,62,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* HASHTAG GRID */
+.hashtag-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.hashtag{background:rgba(75,168,197,.1);border:1px solid rgba(75,168,197,.2);color:var(--teal);padding:5px 12px;border-radius:20px;font-size:13px;cursor:pointer;transition:.2s}
+.hashtag:hover{background:rgba(75,168,197,.2)}
+
+/* CONTENT CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:16px}
+.cal-day{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:8px 6px;text-align:center;font-size:11px}
+.cal-day.has-post{border-color:rgba(201,150,62,.3);background:rgba(201,150,62,.05);cursor:pointer}
+.cal-day.has-post:hover{background:rgba(201,150,62,.1)}
+.cal-day-name{font-size:9px;color:var(--t3);margin-bottom:4px}
+.cal-day-num{font-size:13px;color:var(--white);font-weight:500}
+.cal-day-icon{font-size:14px;margin-top:4px}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,.03);border-radius:12px;padding:4px;margin-bottom:24px}
+.tab{padding:9px 20px;border-radius:8px;font-size:12px;color:var(--t2);cursor:pointer;transition:.2s;font-weight:500}
+.tab.active{background:rgba(201,150,62,.15);color:var(--gold)}
+
+/* COMPETITOR */
+.comp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.comp-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
+.comp-metric{display:flex;gap:16px;font-size:12px;color:var(--t2);margin-top:8px;flex-wrap:wrap}
+.metric-item{display:flex;flex-direction:column;gap:2px}
+.metric-val{font-size:16px;color:var(--gold);font-family:'Cormorant Garamond',serif}
+
+.tip-box{background:rgba(75,168,197,.05);border:1px solid rgba(75,168,197,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:rgba(126,205,232,.8);line-height:1.5;margin-top:16px}
+.tip-box::before{content:'💡 '}
+
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .input-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">RAKSI DERYA <span>Sosyal Medya Asistanı</span></div>
+  <div class="header-badge"><div class="dot"></div> Yapay Zeka Aktif</div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Araçlar</div>
+      <div class="nav-item active" onclick="showTool('icerik')">
+        <span class="nav-icon">✍️</span> İçerik Üretici
+      </div>
+      <div class="nav-item" onclick="showTool('hashtag')">
+        <span class="nav-icon">#</span> Hashtag Üretici
+      </div>
+      <div class="nav-item" onclick="showTool('takvim')">
+        <span class="nav-icon">📅</span> İçerik Takvimi
+      </div>
+      <div class="nav-item" onclick="showTool('rakip')">
+        <span class="nav-icon">🔍</span> Rakip Analizi
+      </div>
+      <div class="nav-item" onclick="showTool('yorum')">
+        <span class="nav-icon">💬</span> Yorum Cevapları
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Platformlar</div>
+      <div class="platform-chips">
+        <div class="chip ig active">📸 Instagram</div>
+        <div class="chip wa active">💬 WhatsApp</div>
+        <div class="chip tw active">🐦 Twitter/X</div>
+      </div>
+    </div>
+    <div class="sidebar-section" style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--t3);padding:0 8px;line-height:1.6">Raks-ı Derya için özel olarak yapılandırılmıştır. İstanbul Boğazı tekne turu & organizasyon.</div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- İÇERİK ÜRETİCİ -->
+    <div id="tool-icerik">
+      <div class="tool-header">
+        <div class="tool-eye">Yapay Zeka Destekli</div>
+        <div class="tool-title">İçerik <em>Üretici</em></div>
+        <div class="tool-sub">Konu ve platform seçin, yapay zeka sizin için hazır gönderi metni yazsın.</div>
+      </div>
+
+      <div class="input-card">
+        <div class="input-row">
+          <div class="field">
+            <label class="input-label">Etkinlik / Konu</label>
+            <select id="ic-konu">
+              <option value="">Seçin...</option>
+              <option>Düğün & Nişan Turu</option>
+              <option>Mezuniyet Partisi</option>
+              <option>Doğum Günü Organizasyonu</option>
+              <option>Kurumsal Etkinlik</option>
+              <option>Gün Batımı Turu</option>
+              <option>Gece Boğaz Turu</option>
+              <option>Yıldönümü Sürprizi</option>
+              <option>Genel Tanıtım</option>
+              <option>Müşteri Yorumu Paylaşımı</option>
+              <option>Sezon Duyurusu</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="input-label">Ton</label>
+            <select id="ic-ton">
+              <option>Romantik & Duygusal</option>
+              <option>Eğlenceli & Enerjik</option>
+              <option>Profesyonel & Kurumsal</option>
+              <option>Sıcak & Samimi</option>
+              <option>Lüks & Prestijli</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:14px">
+          <label class="input-label">Platform Seç</label>
+          <div class="platform-check">
+            <div class="pcheck sel-ig" id="pc-ig" onclick="togglePlatform('ig')">📸 Instagram</div>
+            <div class="pcheck" id="pc-wa" onclick="togglePlatform('wa')">💬 WhatsApp Durumu</div>
+            <div class="pcheck" id="pc-tw" onclick="togglePlatform('tw')">🐦 Twitter/X</div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:16px">
+          <label class="input-label">Ekstra Bilgi (isteğe bağlı)</label>
+          <textarea id="ic-extra" placeholder="Tarih, özel detay, müşteri adı vb..."></textarea>
+        </div>
+
+        <button class="gen-btn" onclick="generateContent()" id="ic-btn">
+          ✦ İçerik Üret
+        </button>
+      </div>
+
+      <div class="loading" id="ic-loading">
+        <div class="spinner"></div>
+        Yapay zeka içerik hazırlıyor...
+      </div>
+
+      <div class="result-card" id="ic-result">
+        <div class="result-platform" id="ic-result-platform">Instagram</div>
+        <div class="result-text" id="ic-result-text"></div>
+        <div class="result-actions">
+          <button class="copy-btn" onclick="copyResult('ic-result-text', this)">📋 Kopyala</button>
+          <button class="copy-btn" onclick="generateContent()">🔄 Yeniden Üret</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HASHTAG -->
+    <div id="tool-hashtag" style="display:none">
+      <div class="tool-header">
+        <div class="tool-eye">Trend Analizi</div>
+        <div class="tool-title">Hashtag <em>Üretici</em></div>
+        <div class="tool-sub">Etkinlik türüne göre en etkili Türkçe ve İngilizce hashtagleri bulun.</div>
+      </div>
+
+      <div class="input-card">
+        <div class="input-row">
+          <div class="field">
+            <label class="input-label">Etkinlik Türü</label>
+            <select id="ht-konu">
+              <option>Düğün & Nişan</option>
+              <option>Mezuniyet</option>
+              <option>Doğum Günü</option>
+              <option>Kurumsal</option>
+              <option>Boğaz Turu</option>
+              <option>Gece Turu</option>
+              <option>Gün Batımı</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="input-label">Hedef Kitle</label>
+            <select id="ht-kitle">
+              <option>Türk Kullanıcılar</option>
+              <option>Yabancı Turistler</option>
+              <option>Her İkisi</option>
+            </select>
+          </div>
+        </div>
+        <button class="gen-btn" onclick="generateHashtags()" id="ht-btn">
+          # Hashtag Üret
+        </button>
+      </div>
+
+      <div class="loading" id="ht-loading">
+        <div class="spinner"></div>
+        Hashtagler analiz ediliyor...
+      </div>
+
+      <div class="result-card" id="ht-result">
+        <div class="result-platform">Önerilen Hashtagler</div>
+        <div class="hashtag-grid" id="ht-tags"></div>
+        <div class="result-text" id="ht-result-text" style="margin-top:16px;font-size:12px;color:var(--t2)"></div>
+        <div class="result-actions" style="margin-top:12px">
+          <button class="copy-btn" onclick="copyResult('ht-result-text', this)">📋 Tümünü Kopyala</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAKVİM -->
+    <div id="tool-takvim" style="display:none">
+      <div class="tool-header">
+        <div class="tool-eye">Haftalık Plan</div>
+        <div class="tool-title">İçerik <em>Takvimi</em></div>
+        <div class="tool-sub">Bir haftalık sosyal medya paylaşım planı oluşturun.</div>
+      </div>
+
+      <div class="input-card">
+        <div class="input-row">
+          <div class="field">
+            <label class="input-label">Dönem / Sezon</label>
+            <select id="tv-sezon">
+              <option>Düğün Sezonu (Mayıs-Haziran)</option>
+              <option>Mezuniyet Sezonu (Haziran-Temmuz)</option>
+              <option>Yaz Sezonu (Temmuz-Ağustos)</option>
+              <option>Sonbahar (Eylül-Ekim)</option>
+              <option>Yıl Sonu (Kasım-Aralık)</option>
+              <option>Genel</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="input-label">Günlük Paylaşım</label>
+            <select id="tv-sayi">
+              <option>1 paylaşım / gün</option>
+              <option>2 paylaşım / gün</option>
+              <option>3 paylaşım / gün</option>
+            </select>
+          </div>
+        </div>
+        <button class="gen-btn" onclick="generateCalendar()" id="tv-btn">
+          📅 Takvim Oluştur
+        </button>
+      </div>
+
+      <div class="loading" id="tv-loading">
+        <div class="spinner"></div>
+        Haftalık plan hazırlanıyor...
+      </div>
+
+      <div class="result-card" id="tv-result">
+        <div class="result-platform">7 Günlük İçerik Planı</div>
+        <div class="result-text" id="tv-result-text"></div>
+        <div class="result-actions" style="margin-top:12px">
+          <button class="copy-btn" onclick="copyResult('tv-result-text', this)">📋 Kopyala</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RAKİP ANALİZİ -->
+    <div id="tool-rakip" style="display:none">
+      <div class="tool-header">
+        <div class="tool-eye">Pazar Analizi</div>
+        <div class="tool-title">Rakip <em>Analizi</em></div>
+        <div class="tool-sub">İstanbul'daki rakip tekne şirketlerini analiz edin, fırsatları keşfedin.</div>
+      </div>
+
+      <div class="input-card">
+        <div class="field" style="margin-bottom:14px">
+          <label class="input-label">Rakip Instagram / İşletme Adı</label>
+          <input type="text" id="rk-isim" placeholder="Örn: @teknetur_istanbul veya Boğaz Tekneleri">
+        </div>
+        <div class="field" style="margin-bottom:16px">
+          <label class="input-label">Ne Analiz Edilsin?</label>
+          <select id="rk-tip">
+            <option>İçerik stratejisi & ne paylaşıyorlar</option>
+            <option>Zayıf yönleri & fırsatlar</option>
+            <option>Fiyatlandırma stratejisi</option>
+            <option>Müşteri yorumlarındaki şikayetler</option>
+            <option>Genel rekabet analizi</option>
+          </select>
+        </div>
+        <button class="gen-btn" onclick="generateCompetitor()" id="rk-btn">
+          🔍 Analiz Et
+        </button>
+      </div>
+
+      <div class="loading" id="rk-loading">
+        <div class="spinner"></div>
+        Rakip analiz ediliyor...
+      </div>
+
+      <div class="result-card" id="rk-result">
+        <div class="result-platform">Rakip Analiz Raporu</div>
+        <div class="result-text" id="rk-result-text"></div>
+        <div class="result-actions" style="margin-top:12px">
+          <button class="copy-btn" onclick="copyResult('rk-result-text', this)">📋 Kopyala</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- YORUM CEVAPLARI -->
+    <div id="tool-yorum" style="display:none">
+      <div class="tool-header">
+        <div class="tool-eye">Müşteri İletişimi</div>
+        <div class="tool-title">Yorum <em>Cevapları</em></div>
+        <div class="tool-sub">Gelen yoruma veya soruya hazır, doğal cevap metni oluşturun.</div>
+      </div>
+
+      <div class="input-card">
+        <div class="field" style="margin-bottom:14px">
+          <label class="input-label">Gelen Yorum / Soru</label>
+          <textarea id="yr-yorum" placeholder="Örn: Fiyatlarınız nedir? / Harika bir organizasyondu teşekkürler! / Kaç kişi alıyorsunuz?"></textarea>
+        </div>
+        <div class="input-row">
+          <div class="field">
+            <label class="input-label">Platform</label>
+            <select id="yr-platform">
+              <option>Instagram Yorum</option>
+              <option>Instagram DM</option>
+              <option>WhatsApp</option>
+              <option>Google Yorum</option>
+              <option>TripAdvisor</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="input-label">Yorum Tonu</label>
+            <select id="yr-tip">
+              <option>Olumlu yorum — teşekkür</option>
+              <option>Fiyat sorusu</option>
+              <option>Rezervasyon sorusu</option>
+              <option>Şikayet / olumsuz yorum</option>
+              <option>Genel bilgi sorusu</option>
+            </select>
+          </div>
+        </div>
+        <button class="gen-btn" onclick="generateReply()" id="yr-btn" style="margin-top:16px">
+          💬 Cevap Yaz
+        </button>
+      </div>
+
+      <div class="loading" id="yr-loading">
+        <div class="spinner"></div>
+        Cevap hazırlanıyor...
+      </div>
+
+      <div class="result-card" id="yr-result">
+        <div class="result-platform" id="yr-result-platform">Instagram Cevabı</div>
+        <div class="result-text" id="yr-result-text"></div>
+        <div class="result-actions" style="margin-top:12px">
+          <button class="copy-btn" onclick="copyResult('yr-result-text', this)">📋 Kopyala</button>
+          <button class="copy-btn" onclick="generateReply()">🔄 Yeniden Yaz</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SYSTEM = `Sen Raks-ı Derya adlı İstanbul Boğazı gezi teknesi işletmesi için çalışan bir sosyal medya uzmanısın. 
+İşletme hakkında bilgiler:
+- İsim: Raks-ı Derya Gezi Teknesi
+- Konum: İstanbul, Eminönü İskelesi
+- Hizmetler: Düğün, nişan, mezuniyet, doğum günü, kurumsal etkinlik, özel gezi turları
+- Deneyim: 10 yıl, 500+ mutlu misafir, 150+ düğün
+- Tel/WhatsApp: 0533 396 23 26
+- Ton: Lüks ama sıcak, Türkçe, samimi
+- Website: https://cihanfilizsevinc-crypto.github.io/raksiderya/`;
+
+async function callClaude(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: SYSTEM,
+      messages: [{role: 'user', content: prompt}]
+    })
+  });
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+function setLoading(id, show) {
+  document.getElementById(id+'-loading').classList.toggle('show', show);
+  const btn = document.getElementById(id+'-btn');
+  if(btn) btn.disabled = show;
+}
+
+function showResult(id, text) {
+  const el = document.getElementById(id+'-result');
+  el.classList.add('show');
+  document.getElementById(id+'-result-text').textContent = text;
+}
+
+// İçerik Üretici
+async function generateContent() {
+  const konu = document.getElementById('ic-konu').value;
+  const ton = document.getElementById('ic-ton').value;
+  const extra = document.getElementById('ic-extra').value;
+  const platforms = [];
+  if(document.getElementById('pc-ig').classList.contains('sel-ig')) platforms.push('Instagram');
+  if(document.getElementById('pc-wa').classList.contains('sel-wa')) platforms.push('WhatsApp Durumu');
+  if(document.getElementById('pc-tw').classList.contains('sel-tw')) platforms.push('Twitter/X');
+
+  if(!konu) { alert('Lütfen bir konu seçin!'); return; }
+  if(!platforms.length) { alert('En az bir platform seçin!'); return; }
+
+  setLoading('ic', true);
+  document.getElementById('ic-result').classList.remove('show');
+
+  const prompt = `${platforms.join(', ')} için ${konu} konusunda ${ton} tonda bir sosyal medya gönderisi yaz.
+${extra ? 'Ek bilgi: ' + extra : ''}
+
+Her platform için ayrı içerik yaz. Emoji kullan. Instagram için hashtag ekle.
+Call-to-action olarak WhatsApp numarasını (0533 396 23 26) veya rezervasyon linkini ekle.
+Doğal, samimi ve etkileyici yaz.`;
+
+  try {
+    const text = await callClaude(prompt);
+    document.getElementById('ic-result-platform').textContent = platforms.join(' · ');
+    showResult('ic', text);
+  } catch(e) {
+    showResult('ic', '❌ Hata oluştu. Lütfen tekrar deneyin.');
+  }
+  setLoading('ic', false);
+}
+
+// Hashtag Üretici
+async function generateHashtags() {
+  const konu = document.getElementById('ht-konu').value;
+  const kitle = document.getElementById('ht-kitle').value;
+  setLoading('ht', true);
+  document.getElementById('ht-result').classList.remove('show');
+
+  const prompt = `Raks-ı Derya tekne işletmesi için ${konu} etkinliği için ${kitle} hedefli Instagram hashtag listesi oluştur.
+
+30 adet hashtag ver:
+- 10 adet yüksek hacimli (1M+ gönderi)
+- 10 adet orta hacimli (100K-1M)
+- 10 adet niş/spesifik (10K-100K)
+
+Sadece hashtag listesini ver, her biri # ile başlasın, aralarında boşluk olsun. Açıklama yazma, direkt hashtagleri yaz.`;
+
+  try {
+    const text = await callClaude(prompt);
+    const tags = text.match(/#\w+/g) || [];
+    const grid = document.getElementById('ht-tags');
+    grid.innerHTML = tags.map(t => `<span class="hashtag" onclick="navigator.clipboard.writeText('${t}')">${t}</span>`).join('');
+    document.getElementById('ht-result-text').textContent = tags.join(' ');
+    document.getElementById('ht-result').classList.add('show');
+  } catch(e) {
+    showResult('ht', '❌ Hata oluştu.');
+  }
+  setLoading('ht', false);
+}
+
+// Takvim
+async function generateCalendar() {
+  const sezon = document.getElementById('tv-sezon').value;
+  const sayi = document.getElementById('tv-sayi').value;
+  setLoading('tv', true);
+  document.getElementById('tv-result').classList.remove('show');
+
+  const prompt = `Raks-ı Derya için ${sezon} dönemine özel, ${sayi} şeklinde 7 günlük Instagram + WhatsApp içerik takvimi hazırla.
+
+Her gün için:
+- Gün adı (Pazartesi, Salı vb.)
+- Platform (Instagram / WhatsApp)
+- İçerik türü (Fotoğraf, Story, Reels, Durum)
+- Konu/başlık
+- En iyi paylaşım saati
+- Kısa açıklama (1-2 cümle)
+
+Düzenli liste formatında yaz, emojiler kullan.`;
+
+  try {
+    const text = await callClaude(prompt);
+    showResult('tv', text);
+  } catch(e) {
+    showResult('tv', '❌ Hata oluştu.');
+  }
+  setLoading('tv', false);
+}
+
+// Rakip Analizi
+async function generateCompetitor() {
+  const isim = document.getElementById('rk-isim').value;
+  const tip = document.getElementById('rk-tip').value;
+  setLoading('rk', true);
+  document.getElementById('rk-result').classList.remove('show');
+
+  const prompt = `İstanbul'da tekne organizasyonu sektöründe ${isim ? isim + ' adlı rakip için' : 'genel rakipler için'} ${tip} konusunda stratejik analiz yap.
+
+Raks-ı Derya'nın güçlü yönleriyle karşılaştır.
+Somut öneriler ver: ne yapmalı, nasıl öne çıkmalı.
+Gerçekçi ve uygulanabilir tavsiyeler sun.`;
+
+  try {
+    const text = await callClaude(prompt);
+    showResult('rk', text);
+  } catch(e) {
+    showResult('rk', '❌ Hata oluştu.');
+  }
+  setLoading('rk', false);
+}
+
+// Yorum Cevabı
+async function generateReply() {
+  const yorum = document.getElementById('yr-yorum').value;
+  const platform = document.getElementById('yr-platform').value;
+  const tip = document.getElementById('yr-tip').value;
+  if(!yorum) { alert('Lütfen yorumu yazın!'); return; }
+
+  setLoading('yr', true);
+  document.getElementById('yr-result').classList.remove('show');
+
+  const prompt = `${platform}'da şu yorum geldi: "${yorum}"
+
+Bu ${tip} için doğal ve samimi bir cevap yaz.
+- Kısa ve öz (çok uzun olmasın)
+- Emoji kullan ama abartma
+- Gerekirse WhatsApp'a (0533 396 23 26) yönlendir
+- Raks-ı Derya adına yaz`;
+
+  try {
+    const text = await callClaude(prompt);
+    document.getElementById('yr-result-platform').textContent = platform + ' Cevabı';
+    showResult('yr', text);
+  } catch(e) {
+    showResult('yr', '❌ Hata oluştu.');
+  }
+  setLoading('yr', false);
+}
+
+// Platform toggle
+const platforms = {ig:'sel-ig', wa:'sel-wa', tw:'sel-tw'};
+function togglePlatform(p) {
+  const el = document.getElementById('pc-'+p);
+  el.classList.toggle(platforms[p]);
+}
+
+// Tool navigation
+function showTool(name) {
+  ['icerik','hashtag','takvim','rakip','yorum'].forEach(t => {
+    document.getElementById('tool-'+t).style.display = t===name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach((el,i) => {
+    el.classList.toggle('active', ['icerik','hashtag','takvim','rakip','yorum'][i]===name);
+  });
+}
+
+// Copy
+function copyResult(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Kopyalandı';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = '📋 Kopyala'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
